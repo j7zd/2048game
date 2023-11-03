@@ -74,6 +74,7 @@ public class VisualUserInterface extends JFrame implements KeyListener{
             return;
         }
         int status = -1;
+        // for some reason up and left, and down and right are switched
         switch (e.getKeyCode()) {
             case KeyEvent.VK_LEFT:
                 status = game.processMove('u');
@@ -126,6 +127,13 @@ public class VisualUserInterface extends JFrame implements KeyListener{
         }
     }
     
+    /**
+     * Draws a single cell on the game board with the given value at the specified coordinates.
+     * @param g the Graphics object to draw on
+     * @param x the x-coordinate of the cell
+     * @param y the y-coordinate of the cell
+     * @param value the value of the cell to be drawn
+     */
     private void drawCell(Graphics g, int x, int y, int value) {
         Color bgColor = Color.LIGHT_GRAY;
         Color textColor = value > 4 ? Color.WHITE : Color.DARK_GRAY;
@@ -151,6 +159,12 @@ public class VisualUserInterface extends JFrame implements KeyListener{
         g.drawString(valueStr, x + CELL_SIZE / 2 - strWidth / 2, y + CELL_SIZE / 2 + 10);
     }
 
+    /**
+     * Constructs a new VisualUserInterface object for the 2048 game.
+     * Sets the title of the window to "2048", sets the default close operation,
+     * sets the size of the window to 500x500 pixels, initializes the game board to all zeros,
+     * adds a key listener to the window, and sets focus traversal keys to false.
+     */
     public VisualUserInterface() {
         super("2048");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -165,6 +179,9 @@ public class VisualUserInterface extends JFrame implements KeyListener{
         setFocusTraversalKeysEnabled(false);
     }
 
+    /**
+     * Starts the game by creating a new instance of the Game class, starting the game, getting the board, setting the game status to 0, painting the graphics, and requesting focus.
+     */
     public void startGame() {
         game = new Game();
         game.startGame();
