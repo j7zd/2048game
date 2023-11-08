@@ -25,7 +25,7 @@ public class ConsoleUserInterface {
      * moves until the game is won or lost. The final score is displayed and the user 
      * is prompted to play again or exit.
      */
-    public void startGame() {
+    public static void startGame() {
         Game game = new Game();
         game.startGame();
         Scanner scanner = new Scanner(System.in);
