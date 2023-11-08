@@ -45,7 +45,7 @@ public class ConsoleUserInterface {
                         System.out.println(e.getMessage());
                     }
                 } catch (StringIndexOutOfBoundsException e) {
-                    System.out.println("Invalid input");
+                    System.out.println("Invalid input. Please enter a move (u/l/d/r)");
                 }
             }
 
@@ -67,7 +67,7 @@ public class ConsoleUserInterface {
                     input = scanner.nextLine().charAt(0);
                     break;
                 } catch (StringIndexOutOfBoundsException e) {
-                    System.out.println("Invalid input");
+                    System.out.println("Invalid input. Please enter 'y' or 'n'");
                 }
             }
             if (input == 'y') {

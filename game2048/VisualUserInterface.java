@@ -13,7 +13,7 @@ import java.awt.event.KeyEvent;
  * It extends the JFrame class and implements the KeyListener interface to handle user input.
  * The class contains methods to draw the game board and prompt the user to restart the game.
  */
-public class VisualUserInterface{
+public class VisualUserInterface {
     /**
      * A JFrame that represents the game window for the 2048 game.
      * It implements the KeyListener interface to handle user input.
