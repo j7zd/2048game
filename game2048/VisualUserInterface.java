@@ -13,15 +13,54 @@ import java.awt.event.KeyEvent;
  * It extends the JFrame class and implements the KeyListener interface to handle user input.
  * The class contains methods to draw the game board and prompt the user to restart the game.
  */
-public class VisualUserInterface extends JFrame implements KeyListener{
-    private int[][] board = new int[4][4];
-    private final int CELL_SIZE = 100;
-    private Game game;
-    private int gameStatus = 0;
+public class VisualUserInterface{
+    /**
+     * A JFrame that represents the game window for the 2048 game.
+     * It implements the KeyListener interface to handle user input.
+     */
+    private static class GameFrame extends JFrame implements KeyListener {
+        @Override
+        public void paint(Graphics g) {
+            super.paint(g);
+            draw(g);
+        }
 
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
+        @Override
+        public void keyPressed(KeyEvent e) {
+            handleKeypress(e);
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            // do nothing
+        }
+        @Override
+        public void keyTyped(KeyEvent e) {
+            // do nothing
+        }
+
+        GameFrame() {
+            super("2048");
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setSize(500, 500);
+            setVisible(true);
+            addKeyListener(this);
+            setFocusable(true);
+            setFocusTraversalKeysEnabled(false);
+        }
+    }
+    
+    private static GameFrame frame = new GameFrame();
+    private static int[][] board = new int[4][4];
+    private static final int CELL_SIZE = 100;
+    private static Game game;
+    private static int gameStatus = 0;
+
+    /**
+     * Draws the game board and score on the screen.
+     * @param g the Graphics object to draw on
+     */
+    private static void draw(Graphics g) {
         int x = 50;
         int y = 50;
 
@@ -67,8 +106,45 @@ public class VisualUserInterface extends JFrame implements KeyListener{
         }
     }
 
-    @Override
-    public void keyPressed(KeyEvent e) {
+    /**
+     * Draws a single cell on the game board with the given value at the specified coordinates.
+     * @param g the Graphics object to draw on
+     * @param x the x-coordinate of the cell
+     * @param y the y-coordinate of the cell
+     * @param value the value of the cell to be drawn
+     */
+    private static void drawCell(Graphics g, int x, int y, int value) {
+        Color bgColor = Color.LIGHT_GRAY;
+        Color textColor = value > 4 ? Color.WHITE : Color.DARK_GRAY;
+        final int[] colors = {0xeee4da, 0xede0c8, 0xf2b179, 0xf59563, 0xf67c5f, 0xf65e3b, 0xedcf72, 0xedcc61, 0xedc850, 0xedc53f, 0xedc22e};
+
+        if (value != 0) {
+            int log = (int) (Math.log(value) / Math.log(2));
+            bgColor = new Color(colors[log - 1]);
+        }
+
+        g.setColor(bgColor);
+        g.fillRect(x, y, CELL_SIZE, CELL_SIZE);
+        g.setColor(Color.DARK_GRAY);
+        g.drawRect(x, y, CELL_SIZE, CELL_SIZE);
+
+        if (value == 0)
+            return;
+
+        g.setColor(textColor);
+        g.setFont(new Font("Arial", Font.BOLD, 24));
+        String valueStr = String.valueOf(value);
+        int strWidth = g.getFontMetrics().stringWidth(valueStr);
+        g.drawString(valueStr, x + CELL_SIZE / 2 - strWidth / 2, y + CELL_SIZE / 2 + 10);
+    }
+    
+    /**
+     * Handles the key press event and processes the move accordingly.
+     * If the game is over, it prompts the user to restart the game.
+     *
+     * @param e the key event to be handled
+     */
+    private static void handleKeypress(KeyEvent e) {
         if (gameStatus != 0) {
             restartPrompt(e);
             return;
@@ -94,19 +170,10 @@ public class VisualUserInterface extends JFrame implements KeyListener{
         if (status == -1)
             return;
         board = game.getBoard();
-        repaint();
+        frame.repaint();
         if (status == 0)
             return;
         gameStatus = status;
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        // do nothing
-    }
-    @Override
-    public void keyTyped(KeyEvent e) {
-        // do nothing
     }
 
     /**
@@ -114,7 +181,7 @@ public class VisualUserInterface extends JFrame implements KeyListener{
      * If the 'Y' key is pressed, the game is restarted. If the 'N' key is pressed, the application is exited.
      * @param e the KeyEvent that triggered the method call
      */
-    private void restartPrompt(KeyEvent e) {
+    private static void restartPrompt(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_Y:
                 startGame();
@@ -126,68 +193,27 @@ public class VisualUserInterface extends JFrame implements KeyListener{
                 break;
         }
     }
+
     
     /**
-     * Draws a single cell on the game board with the given value at the specified coordinates.
-     * @param g the Graphics object to draw on
-     * @param x the x-coordinate of the cell
-     * @param y the y-coordinate of the cell
-     * @param value the value of the cell to be drawn
-     */
-    private void drawCell(Graphics g, int x, int y, int value) {
-        Color bgColor = Color.LIGHT_GRAY;
-        Color textColor = value > 4 ? Color.WHITE : Color.DARK_GRAY;
-        final int[] colors = {0xeee4da, 0xede0c8, 0xf2b179, 0xf59563, 0xf67c5f, 0xf65e3b, 0xedcf72, 0xedcc61, 0xedc850, 0xedc53f, 0xedc22e};
-
-        if (value != 0) {
-            int log = (int) (Math.log(value) / Math.log(2));
-            bgColor = new Color(colors[log - 1]);
-        }
-
-        g.setColor(bgColor);
-        g.fillRect(x, y, CELL_SIZE, CELL_SIZE);
-        g.setColor(Color.DARK_GRAY);
-        g.drawRect(x, y, CELL_SIZE, CELL_SIZE);
-
-        if (value == 0)
-            return;
-
-        g.setColor(textColor);
-        g.setFont(new Font("Arial", Font.BOLD, 24));
-        String valueStr = String.valueOf(value);
-        int strWidth = g.getFontMetrics().stringWidth(valueStr);
-        g.drawString(valueStr, x + CELL_SIZE / 2 - strWidth / 2, y + CELL_SIZE / 2 + 10);
-    }
-
-    /**
-     * Constructs a new VisualUserInterface object for the 2048 game.
-     * Sets the title of the window to "2048", sets the default close operation,
-     * sets the size of the window to 500x500 pixels, initializes the game board to all zeros,
-     * adds a key listener to the window, and sets focus traversal keys to false.
+     * It initializes the game board to all zeros.
      */
     public VisualUserInterface() {
-        super("2048");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 500);
-        setVisible(true);
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++)
                 board[i][j] = 0;
         }
-        addKeyListener(this);
-        setFocusable(true);
-        setFocusTraversalKeysEnabled(false);
     }
 
     /**
      * Starts the game by creating a new instance of the Game class, starting the game, getting the board, setting the game status to 0, painting the graphics, and requesting focus.
      */
-    public void startGame() {
+    public static void startGame() {
         game = new Game();
         game.startGame();
         board = game.getBoard();
         gameStatus = 0;
-        paint(getGraphics());
-        requestFocus();
+        frame.paint(frame.getGraphics());
+        frame.requestFocus();
     }
 }
