@@ -71,8 +71,17 @@ class Game {
             return;
         
         int x, y, value;
-        if (hasReached8)
-            value = 2 << random.nextInt(3);
+        if (hasReached8) {
+            int r = random.nextInt(100);
+            if (r == 99)
+                value = 8;
+            else {
+                if (r >= 90)
+                    value = 4;
+                else
+                    value = 2;
+            }
+        }
         else
             value = 2;
         do {
@@ -146,7 +155,7 @@ class Game {
                 hasMerged[i][j] = false;
             }
         }
-        boolean reached2048 = false;
+        boolean reached2048 = false, hasChanged = false;
 
         for (int i = (dir == 1) ? 0 : 15; isInBounds(i); i += dir) {
             int x = i % 4, y = i / 4;
@@ -166,11 +175,13 @@ class Game {
                 hasMerged[nx][ny] = true;
                 if (board[nx][ny].getValue() == 2048)
                     reached2048 = true;
+                hasChanged = true;
             } else {
                 nx -= mx; ny -= my;
                 if (nx != x || ny != y) {
                     board[nx][ny].setValue(board[x][y].getValue());
                     board[x][y].setValue(0);
+                    hasChanged = true;
                 }
             }
         }
@@ -178,7 +189,8 @@ class Game {
         score += moveScore;
         if (reached2048)
             return 1;
-        addRandomCell();
+        if (hasChanged)
+            addRandomCell();
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++)
                 if (board[i][j].getValue() == 0)
